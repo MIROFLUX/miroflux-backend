@@ -1,0 +1,75 @@
+server:
+  port: ${PORT:1318}
+  servlet:
+    context-path: /api/v1
+
+javers:
+  sqlSchema: ${spring.datasource.schema-name}
+
+app:
+  jwt:
+    secret: someveryverynicekeyhere
+    #jwt expiry time: 168 hours || 7 days
+    expiryTimeInMs: 604800000
+
+application:
+  team: miroflux
+
+spring:
+  application:
+    name: miroflux-backend
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+  datasource:
+    username: ${DB_USERNAME:${user.name}}
+    password: ${DB_PASSWORD:}
+    port: ${DB_PORT:5432}
+    host: ${DB_HOST:localhost}
+    database-name: ${DB_NAME:postgres}
+    driver-class-name: org.postgresql.Driver
+    schema-name: miroflux_db
+    url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database-name}?currentSchema=${spring.datasource.schema-name},public
+    hikari:
+      schema: ${spring.datasource.schema-name}
+  jpa:
+    database: postgresql
+    generate-ddl: false
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        format-sql: true
+        default_schema: "`${spring.datasource.schema-name}`"
+
+  flyway:
+    baseline-on-migrate: true
+    enabled: true
+    locations: classpath:db/migration
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    default-schema: ${spring.datasource.schema-name}
+    schemas:
+      - ${spring.datasource.schema-name}
+
+
+  mustache:
+    check-template-location: false
+
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+miroflux:
+  security:
+    token:
+      expiryTimeInMinutes: 5
+    credentials:
+      - username: notification-service
+        password: Admin123@
+
